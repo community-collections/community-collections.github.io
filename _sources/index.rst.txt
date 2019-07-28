@@ -10,7 +10,7 @@ Welcome to Community Collections's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+Documentation is coming soon!
 
 Indices and tables
 ==================
