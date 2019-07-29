@@ -1,0 +1,132 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Community Collections &#8212; Community Collections  documentation</title>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="nav-item nav-item-0"><a href="#">Community Collections  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="#">
+              <img class="logo" src="_static/cc_logo.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Community Collections</a><ul>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#what-happens-when-you-run-refresh">What happens when you run “refresh”?</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="community-collections">
+<h1>Community Collections<a class="headerlink" href="#community-collections" title="Permalink to this headline">¶</a></h1>
+<p>Community Collections (CC) is an open-source high-performance computing (HPC) framework which provides a seamless interface between <a class="reference external" href="https://lmod.readthedocs.io/en/latest/">Lmod</a> and <a class="reference external" href="https://sylabs.io/singularity/">Singularity containers</a> so that users can download and deploy software in a Singularity container using the elegant module Lmod system. The CC tool is useful for administrators who wish to install or detect both Lmod and Singularity, customize a list of containers from public sources (<a class="reference external" href="#">Docker Hub</a>, and <a class="reference external" href="https://singularity-hub.org/">Singularity Hub</a>, and <a class="reference external" href="https://cloud.sylabs.io/library">Syslabs Cloud Library</a>).</p>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<ol class="simple">
+<li><p>Linux</p></li>
+<li><p>A root-installed Singularity or else we will install one for you, and give you the opportunity to enable it with root</p></li>
+<li><p>“Development Tools” including the <a class="reference external" href="https://gcc.gnu.org/"><code class="docutils literal notranslate"><span class="pre">gcc</span></code></a> compiler</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bzip2</span></code> for obvious reasons</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span></code> to get the code</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wget</span></code> to get necessary components</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">cryptsetup</span></code> package for installing recent versions of Singularity</p></li>
+<li><p>A kernel with user namespaces if you lack root and wish to use Singularity sandbox containers instead of image files</p></li>
+</ol>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>You can install a copy of Community Collections by cloning the source code and running a single “refresh” command. This command will first install a <a class="reference external" href="https://docs.conda.io/en/latest/miniconda.html">Miniconda</a> environment to provide supporting software (more on this later), and then either detect or install Singularity and Lmod.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">community</span><span class="o">-</span><span class="n">collections</span><span class="o">/</span><span class="n">community</span><span class="o">-</span><span class="n">collections</span>
+<span class="n">cd</span> <span class="n">community</span><span class="o">-</span><span class="n">collections</span>
+<span class="o">./</span><span class="n">cc</span> <span class="n">refresh</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="what-happens-when-you-run-refresh">
+<h2>What happens when you run “refresh”?<a class="headerlink" href="#what-happens-when-you-run-refresh" title="Permalink to this headline">¶</a></h2>
+<p>Each time you run the <code class="docutils literal notranslate"><span class="pre">./cc</span> <span class="pre">refresh</span></code> command, it runs the following loop.</p>
+<ol class="simple">
+<li><p>Install the python environment to <code class="docutils literal notranslate"><span class="pre">./miniconda</span></code> and point the <code class="docutils literal notranslate"><span class="pre">./cc</span></code> executable to use that environment. This provides a consistent python environment.</p></li>
+<li><p>Read the <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> file or write the default one.</p></li>
+<li><p>Check for Singularity and Lmod and if they are not registered in <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code>. If they are not detected automatically, the code will ask the user to edit the file. The user can either provide the path to the existing installations, or more likely, ask the program to build them on the next “refresh”.</p></li>
+<li><p>If both Lmod and Singularity are ready, the refresh command will automatically generate the module tree from the “whitelist” in <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code>.</p></li>
+<li><p>The user can customize the whitelist and then run <code class="docutils literal notranslate"><span class="pre">./cc</span> <span class="pre">refresh</span></code> again to update the module tree.</p></li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="nav-item nav-item-0"><a href="#">Community Collections  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>
