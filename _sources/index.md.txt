@@ -14,7 +14,7 @@ Requirements
 7. The `cryptsetup` package for installing recent versions of Singularity
 8. A kernel with user namespaces if you lack root and wish to use Singularity sandbox containers instead of image files
 
-The code is tested in two primary use cases. Users can install the code on a relatively minimal machine with the followind Dockerfile.
+The code is tested in two primary use cases. Users can install the code on a relatively minimal machine with the following Dockerfile.
 
 <a name="dockerfile"></a>
 ~~~
@@ -276,7 +276,7 @@ cd community-collections
 ./cc refresh
 ~~~
 
-Note that you may need to run `module load singularity` beforehand to ensure that CC can find that program. It will use a separate alias module to access the singularity executable which. The build procedure is very similar for the first two cases, however CC will rely on system-wide components (lua, tcl, etc) wherever possible. As with the previous cases, you can enable CC by preparing and sourcing a profile script with the following commands.
+Note that you may need to run `module load singularity` beforehand to ensure that CC can find that program. It will use a separate alias module to access the singularity executable with. The build procedure is very similar for the first two cases, however CC will rely on system-wide components (lua, tcl, etc) wherever possible. As with the previous cases, you can enable CC by preparing and sourcing a profile script with the following commands:
 
 ~~~
 $ ./cc profile
