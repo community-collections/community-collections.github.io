@@ -42,6 +42,14 @@
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#what-happens-when-you-run-refresh">What happens when you run “refresh”?</a></li>
+<li><a class="reference internal" href="#case-1-a-minimal-system-with-root">Case 1: A minimal system with root</a></li>
+<li><a class="reference internal" href="#case-2-a-minimal-system-without-root">Case 2: A minimal system without root</a></li>
+<li><a class="reference internal" href="#case-3-an-hpc-resource-with-singularity-and-lmod">Case 3: An HPC resource with Singularity and Lmod</a></li>
+<li><a class="reference internal" href="#a-name-usage-a-usage"><a name="usage"></a>
+Usage</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#blacklist">Blacklist</a></li>
+<li><a class="reference internal" href="#extensibility">Extensibility</a></li>
 </ul>
 </li>
 </ul>
@@ -86,6 +94,20 @@
 <li><p>The <code class="docutils literal notranslate"><span class="pre">cryptsetup</span></code> package for installing recent versions of Singularity</p></li>
 <li><p>A kernel with user namespaces if you lack root and wish to use Singularity sandbox containers instead of image files</p></li>
 </ol>
+<p>The code is tested in two primary use cases. Users can install the code on a relatively minimal machine with the followind Dockerfile.</p>
+<p><a name="dockerfile"></a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FROM</span> <span class="n">centos</span><span class="p">:</span><span class="n">centos7</span>
+<span class="n">RUN</span> <span class="n">yum</span> <span class="n">update</span> <span class="o">-</span><span class="n">y</span>
+<span class="n">RUN</span> <span class="n">yum</span> <span class="n">groupinstall</span> <span class="o">-</span><span class="n">y</span> <span class="s1">&#39;Development Tools&#39;</span>
+<span class="n">RUN</span> <span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">wget</span>
+<span class="n">RUN</span> <span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">which</span>
+<span class="n">RUN</span> <span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">git</span>
+<span class="n">RUN</span> <span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">bzip2</span>
+<span class="n">RUN</span> <span class="n">yum</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> <span class="n">cryptsetup</span>
+</pre></div>
+</div>
+<p>When you install community collections on the minimal system described above, it will use Miniconda to providing supporting software such as <code class="docutils literal notranslate"><span class="pre">tcl</span></code> and <code class="docutils literal notranslate"><span class="pre">squashfs-tools</span></code> and also compile <code class="docutils literal notranslate"><span class="pre">Singularity</span></code> and <code class="docutils literal notranslate"><span class="pre">Lmod</span></code> from their latest available source distributions.</p>
+<p>Alternately, it can be deployed on a standard HPC resource. The code is designed to automatically detect preexisting Lmod and Singularity installations. The most important feature of Community Collections is its ability to <em>add container-driven modules to Lmod</em>.</p>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
@@ -98,14 +120,339 @@
 </div>
 <div class="section" id="what-happens-when-you-run-refresh">
 <h2>What happens when you run “refresh”?<a class="headerlink" href="#what-happens-when-you-run-refresh" title="Permalink to this headline">¶</a></h2>
-<p>Each time you run the <code class="docutils literal notranslate"><span class="pre">./cc</span> <span class="pre">refresh</span></code> command, it runs the following loop.</p>
+<p>Each time you run the <code class="docutils literal notranslate"><span class="pre">./cc</span> <span class="pre">refresh</span></code> command, it executes the following loop.</p>
 <ol class="simple">
 <li><p>Install the python environment to <code class="docutils literal notranslate"><span class="pre">./miniconda</span></code> and point the <code class="docutils literal notranslate"><span class="pre">./cc</span></code> executable to use that environment. This provides a consistent python environment.</p></li>
 <li><p>Read the <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> file or write the default one.</p></li>
-<li><p>Check for Singularity and Lmod and if they are not registered in <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code>. If they are not detected automatically, the code will ask the user to edit the file. The user can either provide the path to the existing installations, or more likely, ask the program to build them on the next “refresh”.</p></li>
+<li><p>Check for Singularity and Lmod and if they are not registered in <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code>. If they are not detected automatically, the code will ask you to edit the file. You can either provide the path to the existing installations, or more likely, ask the program to build them on the next “refresh”.</p></li>
 <li><p>If both Lmod and Singularity are ready, the refresh command will automatically generate the module tree from the “whitelist” in <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code>.</p></li>
 <li><p>The user can customize the whitelist and then run <code class="docutils literal notranslate"><span class="pre">./cc</span> <span class="pre">refresh</span></code> again to update the module tree.</p></li>
 </ol>
+</div>
+<div class="section" id="case-1-a-minimal-system-with-root">
+<h2>Case 1: A minimal system with root<a class="headerlink" href="#case-1-a-minimal-system-with-root" title="Permalink to this headline">¶</a></h2>
+<p>To deploy CC on the minimal system given by the <a class="reference external" href="#dockerfile">docker container above</a>, you only need to run the refresh function.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone http://github.com/community-collections/community-collections
+$ cd community-collections
+$ ./cc refresh
+[CC] [STATUS] reading cache.json
+[CC] [STATUS] failed to find cache so running bootstrap again
+[CC] [STATUS] establishing environment
+[CC] [STATUS] cannot find conda
+[CC] [STATUS] installing miniconda
+status executing the following script
+| set -e
+| set -x
+| # environment here
+| 
+| set pipefail
+| tmpdir=$(mktemp -d)
+| here=$(pwd)
+| cd $tmpdir
+| echo &quot;[STATUS] temporary build directory is $tmpdir&quot;
+| # build here
+| 
+| wget --progress=bar:force https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+| bash Miniconda3-latest-Linux-x86_64.sh -b -p /home/rpb/community-collections/miniconda -u
+| 
+| cd $here
+| rm -rf $tmpdir
++ set pipefail
+++ mktemp -d
++ tmpdir=/tmp/tmp.sQGCSCsUJJ
+++ pwd
++ here=/home/rpb/community-collections
++ cd /tmp/tmp.sQGCSCsUJJ
++ echo &#39;[STATUS] temporary build directory is /tmp/tmp.sQGCSCsUJJ&#39;
+[STATUS] temporary build directory is /tmp/tmp.sQGCSCsUJJ
+</pre></div>
+</div>
+<p>The output continues as the program installs a Miniconda environment and a set of supporting software. When it is done, you will see the following “error” message.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">done</span> <span class="n">building</span> <span class="n">the</span> <span class="n">environment</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">writing</span> <span class="n">cache</span><span class="o">.</span><span class="n">json</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">running</span> <span class="n">a</span> <span class="n">subshell</span> <span class="n">to</span> <span class="n">complete</span> <span class="n">the</span> <span class="n">installation</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">reading</span> <span class="n">cache</span><span class="o">.</span><span class="n">json</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">writing</span> <span class="n">default</span> <span class="n">settings</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">inferring</span> <span class="n">use</span> <span class="n">case</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">ERROR</span><span class="p">]</span> <span class="n">caught</span> <span class="n">error</span> <span class="n">during</span> <span class="s2">&quot;lmod&quot;</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">received</span> <span class="n">error</span><span class="p">:</span> <span class="n">Failed</span> <span class="n">to</span> <span class="n">find</span> <span class="n">Lmod</span><span class="o">.</span> <span class="n">Need</span> <span class="n">build</span> <span class="n">path</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">user</span><span class="o">.</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">ERROR</span><span class="p">]</span> <span class="n">caught</span> <span class="n">error</span> <span class="n">during</span> <span class="s2">&quot;singularity&quot;</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">received</span> <span class="n">error</span><span class="p">:</span> <span class="n">Failed</span> <span class="n">to</span> <span class="n">find</span> <span class="n">Singularity</span><span class="o">.</span> <span class="n">Need</span> <span class="n">build</span> <span class="n">path</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">user</span><span class="o">.</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">Edit</span> <span class="n">cc</span><span class="o">.</span><span class="n">yaml</span> <span class="ow">and</span> <span class="n">rerun</span> <span class="n">to</span> <span class="k">continue</span><span class="o">.</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">writing</span> <span class="n">cache</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p>At this point, CC has failed to find Singularity or Lmod. Edit the default <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> file to authorize a build. This is our <em><strong>settings</strong></em> file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># cc.yaml
+images: ~/.cc_images
+lmod:
+  build: ./lmod
+  error: ERROR. Remove this note and follow these instructions to continue. Cannot
+    locate Lmod. Set the `build` key to a desired installation location, remove this
+    error, and refresh to continue.
+module_settings:
+  source: docker
+singularity:
+  build: ./singularity
+  error: ERROR. Remove this note and follow these instructions to continue. Cannot
+    locate Singularity. Set the `build` key to a desired installation location, remove
+    this error, and refresh to continue.
+  sandbox: false
+whitelist:
+  R:
+    calls:
+    - R
+    - Rscript
+    repo: r-base
+    source: docker
+    version: &#39;&gt;=3.6&#39;
+  julia:
+    source: docker
+    version: &#39;&gt;=1.0.1&#39;
+  lolcow:
+    repo: leconte/examples/lolcow
+    source: library
+    version: latest
+  tensorflow:
+    calls:
+    - python
+    gpu: true
+    repo: tensorflow/tensorflow
+    shell: false
+    source: docker
+    version: 1.12.3-gpu-py3
+</pre></div>
+</div>
+<p>If you remove the <code class="docutils literal notranslate"><span class="pre">error</span></code> entries in the <code class="docutils literal notranslate"><span class="pre">lmod</span></code> and <code class="docutils literal notranslate"><span class="pre">singularity</span></code> sections, the settings file will instruct the program to build Lmod and Singularity at the locations given by the <code class="docutils literal notranslate"><span class="pre">build</span></code> keys. Run <code class="docutils literal notranslate"><span class="pre">./cc</span> <span class="pre">refresh</span></code> to start building the code.</p>
+<p>If your system supplies <code class="docutils literal notranslate"><span class="pre">lua</span></code> with <code class="docutils literal notranslate"><span class="pre">lfs</span></code>, the Lua filesystem package, them Lmod will use that, otherwise it compiles its own copy. Miniconda also supplies <code class="docutils literal notranslate"><span class="pre">tcl</span></code> with headers since they are absent on our minimal system.</p>
+<p>When the installation is complete, the code will report that it is ready.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[CC] [STATUS] reading cache.json
+[CC] [STATUS] found settings at cc.yaml
+[CC] [STATUS] inferring use case
+[CC] [STATUS] Lmod is reporting ready
+[CC] [STATUS] checking singularity
+[CC] [STATUS] Singularity is reporting ready
+[CC] [STATUS] community-collections is ready!
+[CC] [STATUS] cache is unchanged
+</pre></div>
+</div>
+<p>You can ignore the cache for now. The next step is to use root permissions to enable singularity. First you can check the Singularity installation with the <code class="docutils literal notranslate"><span class="pre">capable</span></code> command.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./cc capable
+[CC] [STATUS] reading cache.json
+[CC] [WARNING] root must own: ./singularity/libexec/singularity/bin/starter-suid
+[CC] [WARNING] root must own: ./singularity/etc/singularity/singularity.conf
+[CC] [WARNING] root must own: ./singularity/etc/singularity/capability.json
+[CC] [WARNING] root must own: ./singularity/etc/singularity/ecl.toml
+[CC] [STATUS] run the following commands as root to give singularity the standard permissions: 
+
+chown root:root ./singularity/etc/singularity/singularity.conf
+chown root:root ./singularity/etc/singularity/capability.json
+chown root:root ./singularity/etc/singularity/ecl.toml
+chown root:root ./singularity/libexec/singularity/bin/starter-suid
+chmod 4755 ./singularity/libexec/singularity/bin/starter-suid
+
+[CC] [STATUS] Run &quot;sudo ./cc enable&quot; to do this automatically.
+[CC] [STATUS] cache is unchanged
+</pre></div>
+</div>
+<p>You can run these commands yourself, or use the following sudo command. Either way, they will assign root ownership and the correct suid bit to the necessary Singularity components.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="o">./</span><span class="n">cc</span> <span class="n">enable</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">reading</span> <span class="n">cache</span><span class="o">.</span><span class="n">json</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">WARNING</span><span class="p">]</span> <span class="n">root</span> <span class="n">must</span> <span class="n">own</span><span class="p">:</span> <span class="o">./</span><span class="n">singularity</span><span class="o">/</span><span class="n">libexec</span><span class="o">/</span><span class="n">singularity</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">starter</span><span class="o">-</span><span class="n">suid</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">WARNING</span><span class="p">]</span> <span class="n">root</span> <span class="n">must</span> <span class="n">own</span><span class="p">:</span> <span class="o">./</span><span class="n">singularity</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">singularity</span><span class="o">/</span><span class="n">singularity</span><span class="o">.</span><span class="n">conf</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">WARNING</span><span class="p">]</span> <span class="n">root</span> <span class="n">must</span> <span class="n">own</span><span class="p">:</span> <span class="o">./</span><span class="n">singularity</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">singularity</span><span class="o">/</span><span class="n">capability</span><span class="o">.</span><span class="n">json</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">WARNING</span><span class="p">]</span> <span class="n">root</span> <span class="n">must</span> <span class="n">own</span><span class="p">:</span> <span class="o">./</span><span class="n">singularity</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">singularity</span><span class="o">/</span><span class="n">ecl</span><span class="o">.</span><span class="n">toml</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">run</span> <span class="n">the</span> <span class="n">following</span> <span class="n">commands</span> <span class="k">as</span> <span class="n">root</span> <span class="n">to</span> <span class="n">give</span> <span class="n">singularity</span> <span class="n">the</span> <span class="n">standard</span> <span class="n">permissions</span><span class="p">:</span> 
+
+<span class="n">chown</span> <span class="n">root</span><span class="p">:</span><span class="n">root</span> <span class="o">./</span><span class="n">singularity</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">singularity</span><span class="o">/</span><span class="n">singularity</span><span class="o">.</span><span class="n">conf</span>
+<span class="n">chown</span> <span class="n">root</span><span class="p">:</span><span class="n">root</span> <span class="o">./</span><span class="n">singularity</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">singularity</span><span class="o">/</span><span class="n">capability</span><span class="o">.</span><span class="n">json</span>
+<span class="n">chown</span> <span class="n">root</span><span class="p">:</span><span class="n">root</span> <span class="o">./</span><span class="n">singularity</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">singularity</span><span class="o">/</span><span class="n">ecl</span><span class="o">.</span><span class="n">toml</span>
+<span class="n">chown</span> <span class="n">root</span><span class="p">:</span><span class="n">root</span> <span class="o">./</span><span class="n">singularity</span><span class="o">/</span><span class="n">libexec</span><span class="o">/</span><span class="n">singularity</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">starter</span><span class="o">-</span><span class="n">suid</span>
+<span class="n">chmod</span> <span class="mi">4755</span> <span class="o">./</span><span class="n">singularity</span><span class="o">/</span><span class="n">libexec</span><span class="o">/</span><span class="n">singularity</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">starter</span><span class="o">-</span><span class="n">suid</span>
+
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">Run</span> <span class="s2">&quot;sudo ./cc enable&quot;</span> <span class="n">to</span> <span class="n">do</span> <span class="n">this</span> <span class="n">automatically</span><span class="o">.</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">attempting</span> <span class="n">to</span> <span class="n">run</span> <span class="n">the</span> <span class="n">commands</span> <span class="n">above</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">executing</span> <span class="n">the</span> <span class="n">following</span> <span class="n">script</span>
+<span class="o">|</span> <span class="n">chown</span> <span class="n">root</span><span class="p">:</span><span class="n">root</span> <span class="o">./</span><span class="n">singularity</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">singularity</span><span class="o">/</span><span class="n">singularity</span><span class="o">.</span><span class="n">conf</span>
+<span class="o">|</span> <span class="n">chown</span> <span class="n">root</span><span class="p">:</span><span class="n">root</span> <span class="o">./</span><span class="n">singularity</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">singularity</span><span class="o">/</span><span class="n">capability</span><span class="o">.</span><span class="n">json</span>
+<span class="o">|</span> <span class="n">chown</span> <span class="n">root</span><span class="p">:</span><span class="n">root</span> <span class="o">./</span><span class="n">singularity</span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">singularity</span><span class="o">/</span><span class="n">ecl</span><span class="o">.</span><span class="n">toml</span>
+<span class="o">|</span> <span class="n">chown</span> <span class="n">root</span><span class="p">:</span><span class="n">root</span> <span class="o">./</span><span class="n">singularity</span><span class="o">/</span><span class="n">libexec</span><span class="o">/</span><span class="n">singularity</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">starter</span><span class="o">-</span><span class="n">suid</span>
+<span class="o">|</span> <span class="n">chmod</span> <span class="mi">4755</span> <span class="o">./</span><span class="n">singularity</span><span class="o">/</span><span class="n">libexec</span><span class="o">/</span><span class="n">singularity</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">starter</span><span class="o">-</span><span class="n">suid</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">cache</span> <span class="ow">is</span> <span class="n">unchanged</span>
+</pre></div>
+</div>
+<p>Beware that this will fail on disks with <code class="docutils literal notranslate"><span class="pre">nosuid</span></code>.</p>
+<p>Using the code requires only that you generate short profile script.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./cc profile
+[CC] [STATUS] reading cache.json
+[CC] [STATUS] to use CC, run: source /home/rpb/community-collections/profile_cc.sh
+[CC] [STATUS] proposed modifications to ~/.bashrc:
+source /home/rpb/community-collections/profile_cc.sh
+[QUESTION] okay to add the above to your ~/.bashrc? (y/N)?  
+[CC] [STATUS] cache is unchanged
+</pre></div>
+</div>
+<p><a name="profile"></a>
+The <code class="docutils literal notranslate"><span class="pre">profile_cc.sh</span></code> script adds a new moduletree to Lmod and sets the correct environment variables to use singularity.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># profile_cc.sh
+post_add_luarc () { if [ -s &quot;$1&quot; ] &amp;&amp; [[ &quot;:$LMOD_RC:&quot; != *&quot;:$1:&quot;* ]]; then export LMOD_RC=${LMOD_RC:+$LMOD_RC:}$1; fi }
+post_add_luarc /home/rpb/community-collections/cc_tools/lmodrc.lua
+export MODULEPATH=${MODULEPATH:+$MODULEPATH:}/home/rpb/community-collections/modulefiles
+source /home/rpb/community-collections/lmod/lmod/init/bash
+export _COMCOL_ROOT=&quot;/home/rpb/community-collections&quot;
+post_add_luarc () { if [ -s &quot;$1&quot; ] &amp;&amp; [[ &quot;:$LMOD_RC:&quot; != *&quot;:$1:&quot;* ]]; then export LMOD_RC=${LMOD_RC:+$LMOD_RC:}$1; fi }
+post_add_luarc /home/rpb/community-collections/cc_tools/lmodrc.lua
+</pre></div>
+</div>
+<p>You can start using singularity by sourcing this script.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">community</span><span class="o">-</span><span class="n">collections</span><span class="o">/</span><span class="n">profile_cc</span><span class="o">.</span><span class="n">sh</span>
+</pre></div>
+</div>
+<p>Now CC is ready for use. Skip to the <a class="reference external" href="#usage">usage section</a> to continue.</p>
+</div>
+<div class="section" id="case-2-a-minimal-system-without-root">
+<h2>Case 2: A minimal system without root<a class="headerlink" href="#case-2-a-minimal-system-without-root" title="Permalink to this headline">¶</a></h2>
+<p>If you do not have root access on your machine, you can use Singularity if you have a kernel that provides uesr namespaces. You can install the code using the exact same procedure above, with only one difference. Your <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> file will have a <code class="docutils literal notranslate"><span class="pre">sandbox</span></code> flag in the <code class="docutils literal notranslate"><span class="pre">singularity</span></code> entry. Set it if you lack root, and the code will use the <code class="docutils literal notranslate"><span class="pre">userns</span></code> and <code class="docutils literal notranslate"><span class="pre">sandbox</span></code> flags when building Singularity containers. These are described in the <a class="reference external" href="https://sylabs.io/guides/3.3/user-guide/build_a_container.html">Singularity documentation</a>.</p>
+<p>If your kernel does not provide usernamespaces, the code will refuse to build. A sandbox is really just a standard directory structure. The downside to using sandboxes is the large overhead caused by using many small files. This solution is nevertheless highly useful for users without root.</p>
+</div>
+<div class="section" id="case-3-an-hpc-resource-with-singularity-and-lmod">
+<h2>Case 3: An HPC resource with Singularity and Lmod<a class="headerlink" href="#case-3-an-hpc-resource-with-singularity-and-lmod" title="Permalink to this headline">¶</a></h2>
+<p>If you wish to use CC on a well-maintained HPC resource that already provides Singularity and Lmod, you can install it with the same procedure above. The code will detect these components and use the available versions instead of building its own.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">community</span><span class="o">-</span><span class="n">collections</span><span class="o">/</span><span class="n">community</span><span class="o">-</span><span class="n">collections</span>
+<span class="n">cd</span> <span class="n">community</span><span class="o">-</span><span class="n">collections</span>
+<span class="o">./</span><span class="n">cc</span> <span class="n">refresh</span>
+</pre></div>
+</div>
+<p>Note that you may need to run <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">singularity</span></code> beforehand to ensure that CC can find that program. It will use a separate alias module to access the singularity executable which. The build procedure is very similar for the first two cases, however CC will rely on system-wide components (lua, tcl, etc) wherever possible. As with the previous cases, you can enable CC by preparing and sourcing a profile script with the following commands.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./cc profile
+[CC] [STATUS] reading cache.json
+[CC] [STATUS] to use CC, run: source /home/rpb/community-collections/profile_cc.sh
+[CC] [STATUS] proposed modifications to ~/.bashrc:
+source /home/rpb/community-collections/profile_cc.sh
+[QUESTION] okay to add the above to your ~/.bashrc? (y/N)?  
+[CC] [STATUS] cache is unchanged
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">profile_cc.sh</span></code> script (<a class="reference external" href="#profile">see above</a>) adds a new moduletree to Lmod and sets the correct environment variables to use singularity. You can start using singularity by sourcing this script.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">community</span><span class="o">-</span><span class="n">collections</span><span class="o">/</span><span class="n">profile_cc</span><span class="o">.</span><span class="n">sh</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="a-name-usage-a-usage">
+<h2><a name="usage"></a>
+Usage<a class="headerlink" href="#a-name-usage-a-usage" title="Permalink to this headline">¶</a></h2>
+<p>Once CC is installed, it behaves almost exactly like a standard software module. The moduletree provided by CC will coeexist with your preexisting modules.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ module avail
+------------------- /home/rpb/community-collections/modulefiles -------------------
+   R/3.6.0              (a)      julia/1.0.1 (a)    julia/1.1.0               (a)
+   R/3.6.1              (a,D)    julia/1.0.2 (a)    julia/1.1.1               (r,D)
+   cc/conda/default              julia/1.0.3 (a)    lolcow/latest             (a)
+   cc/env/default                julia/1.0.4 (a)    tensorflow/1.12.3-gpu-py3 (g,a)
+   cc/singularity/3.3.0          julia/1.1   (a)
+
+  Where:
+   g:  built for GPU
+   r:  Downloaded  and ready to use (community collections).
+   a:  Available for download (community collections).
+   D:  Default Module
+
+Use &quot;module spider&quot; to find all possible modules.
+Use &quot;module keyword key1 key2 ...&quot; to search for all possible modules matching any of the &quot;keys&quot;.
+</pre></div>
+</div>
+<p>The modules prefixed with <code class="docutils literal notranslate"><span class="pre">cc</span></code> provide the Miniconda environment (<code class="docutils literal notranslate"><span class="pre">cc/env</span></code>) and conda itself (<code class="docutils literal notranslate"><span class="pre">cc/conda</span></code>) for internal use by CC. The <code class="docutils literal notranslate"><span class="pre">cc/singularity</span></code> module will point to either a detected Singularity already installed on the machine (which might be available from a separate module) or the internal copy built by CC. You do not have to use these modules directly.</p>
+<p>The remaining modules are provided by the versions in the <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> settings file. The property tag “(a)” indicates that they are ready to be downloaded, while <code class="docutils literal notranslate"><span class="pre">(r)</span></code> indicates that they have already been downloaded. When you load an “available” module for the first time, CC will call a <code class="docutils literal notranslate"><span class="pre">singularity</span> <span class="pre">pull</span></code> to download the image to <code class="docutils literal notranslate"><span class="pre">~/.cc_images</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ml</span> <span class="n">R</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="n">making</span> <span class="n">a</span> <span class="n">cache</span> <span class="n">directory</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">rpb</span><span class="o">/.</span><span class="n">cc_images</span>
+<span class="n">INFO</span><span class="p">:</span>    <span class="n">Converting</span> <span class="n">OCI</span> <span class="n">blobs</span> <span class="n">to</span> <span class="n">SIF</span> <span class="nb">format</span>
+<span class="n">INFO</span><span class="p">:</span>    <span class="n">Starting</span> <span class="n">build</span><span class="o">...</span>
+<span class="n">Getting</span> <span class="n">image</span> <span class="n">source</span> <span class="n">signatures</span>
+<span class="n">Copying</span> <span class="n">blob</span> <span class="n">sha256</span><span class="p">:</span><span class="mi">23427</span><span class="n">ac613ac3b1217287fc64101680b8c27c7aaaf99228c376aee6231d02953</span>
+ <span class="mf">48.05</span> <span class="n">MiB</span> <span class="o">/</span> <span class="mf">48.05</span> <span class="n">MiB</span> <span class="p">[</span><span class="o">====================================================</span><span class="p">]</span> <span class="mi">0</span><span class="n">s</span>
+<span class="n">Copying</span> <span class="n">blob</span> <span class="n">sha256</span><span class="p">:</span><span class="mi">2</span><span class="n">ee18016dfa8b3bbdffb48a68b83c1d69193eac322d1978db9b6984cef885c1d</span>
+ <span class="mf">1.80</span> <span class="n">KiB</span> <span class="o">/</span> <span class="mf">1.80</span> <span class="n">KiB</span> <span class="p">[</span><span class="o">======================================================</span><span class="p">]</span> <span class="mi">0</span><span class="n">s</span>
+<span class="n">Copying</span> <span class="n">blob</span> <span class="n">sha256</span><span class="p">:</span><span class="n">fb681ccd8fcdf49564df3c9789f60a37e443f99966342db1a34a898bb5e61375</span>
+ <span class="mf">26.13</span> <span class="n">MiB</span> <span class="o">/</span> <span class="mf">26.13</span> <span class="n">MiB</span> <span class="p">[</span><span class="o">====================================================</span><span class="p">]</span> <span class="mi">0</span><span class="n">s</span>
+<span class="n">Copying</span> <span class="n">blob</span> <span class="n">sha256</span><span class="p">:</span><span class="n">ebbfe00354247f9c78ade5a97ce6a5947ea5121514fd0997ecef71853db7eb7a</span>
+ <span class="mf">842.64</span> <span class="n">KiB</span> <span class="o">/</span> <span class="mf">842.64</span> <span class="n">KiB</span> <span class="p">[</span><span class="o">==================================================</span><span class="p">]</span> <span class="mi">0</span><span class="n">s</span>
+<span class="n">Copying</span> <span class="n">blob</span> <span class="n">sha256</span><span class="p">:</span><span class="mi">5</span><span class="n">c8c1f2bdc1d29116d207c3682c7ad6f3335a7d92114c66d1a07ef8741833424</span>
+ <span class="mi">295</span> <span class="n">B</span> <span class="o">/</span> <span class="mi">295</span> <span class="n">B</span> <span class="p">[</span><span class="o">============================================================</span><span class="p">]</span> <span class="mi">0</span><span class="n">s</span>
+<span class="n">Copying</span> <span class="n">blob</span> <span class="n">sha256</span><span class="p">:</span><span class="mi">2</span><span class="n">bf2af8bf134f4b0d89b1088fc2fc30ecaa0842dbee79f7e2e8084f8e2fb6778</span>
+ <span class="mf">192.58</span> <span class="n">MiB</span> <span class="o">/</span> <span class="mf">192.58</span> <span class="n">MiB</span> <span class="p">[</span><span class="o">==================================================</span><span class="p">]</span> <span class="mi">2</span><span class="n">s</span>
+<span class="n">Copying</span> <span class="n">config</span> <span class="n">sha256</span><span class="p">:</span><span class="mi">09</span><span class="n">a59a224992641fdec61f2bd4ade7929e83ba1c3af1976d81251aea498e173f</span>
+ <span class="mf">3.73</span> <span class="n">KiB</span> <span class="o">/</span> <span class="mf">3.73</span> <span class="n">KiB</span> <span class="p">[</span><span class="o">======================================================</span><span class="p">]</span> <span class="mi">0</span><span class="n">s</span>
+<span class="n">Writing</span> <span class="n">manifest</span> <span class="n">to</span> <span class="n">image</span> <span class="n">destination</span>
+<span class="n">Storing</span> <span class="n">signatures</span>
+<span class="n">INFO</span><span class="p">:</span>    <span class="n">Creating</span> <span class="n">SIF</span> <span class="n">file</span><span class="o">...</span>
+<span class="n">INFO</span><span class="p">:</span>    <span class="n">Build</span> <span class="n">complete</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">rpb</span><span class="o">/.</span><span class="n">singularity</span><span class="o">/</span><span class="n">cache</span><span class="o">/</span><span class="n">oci</span><span class="o">-</span><span class="n">tmp</span><span class="o">/</span><span class="n">d0b534c18ca77cff083c681b234ddcd4e58b198412d307dbf27cb02f7aa413b0</span><span class="o">/</span><span class="n">r</span><span class="o">-</span><span class="n">base_3</span><span class="o">.</span><span class="mf">6.1</span><span class="o">.</span><span class="n">sif</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="n">downloaded</span> <span class="n">the</span> <span class="n">image</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">rpb</span><span class="o">/.</span><span class="n">cc_images</span><span class="o">/</span><span class="n">R</span><span class="o">-</span><span class="mf">3.6</span><span class="o">.</span><span class="mf">1.</span><span class="n">sif</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="n">checking</span> <span class="n">image</span> <span class="n">sizes</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">rpb</span><span class="o">/.</span><span class="n">cc_images</span>
+   <span class="mi">265</span><span class="n">MB</span> <span class="n">R</span><span class="o">-</span><span class="mf">3.6</span><span class="o">.</span><span class="mf">1.</span><span class="n">sif</span>
+   <span class="mi">265</span><span class="n">MB</span> <span class="n">TOTAL</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="n">the</span> <span class="o">~/.</span><span class="n">singularity</span> <span class="n">folder</span> <span class="ow">is</span> <span class="n">also</span> <span class="mi">520</span><span class="n">MB</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="n">you</span> <span class="n">can</span> <span class="n">clear</span> <span class="n">the</span> <span class="n">singularity</span> <span class="n">cache</span> <span class="k">with</span><span class="p">:</span> <span class="s2">&quot;singularity cache clean -f&quot;</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="n">please</span> <span class="n">be</span> <span class="n">mindful</span> <span class="n">of</span> <span class="n">your</span> <span class="n">quota</span>
+<span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="n">the</span> <span class="n">module</span> <span class="ow">is</span> <span class="n">ready</span><span class="p">:</span> <span class="n">R</span>
+</pre></div>
+</div>
+<p>The code reports the size of the image because it is downloaded to the <code class="docutils literal notranslate"><span class="pre">~/.cc_image</span></code> folder and may count against a quota. After loading the module once, the code is marked “ready” on the module list and the next time you load the module, it will used the cached image. Most programs, like <code class="docutils literal notranslate"><span class="pre">R</span></code> are aliased directly to a shell function that calls singularity to start the container with the <code class="docutils literal notranslate"><span class="pre">R</span></code> command. It also pipes arguments into that command. Aside from the output above, the use of a singularity container is completely opaque to the user.</p>
+</div>
+<div class="section" id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
+<p>CC is designed to provide “versionless” modules from the fairly simple <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> settings file. Let us consider the <code class="docutils literal notranslate"><span class="pre">R</span></code> package described above. The following is the default <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> after we have installed the pacakge.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cc.yaml</span>
+<span class="n">images</span><span class="p">:</span> <span class="o">~/.</span><span class="n">cc_images</span>
+<span class="n">lmod</span><span class="p">:</span>
+  <span class="n">root</span><span class="p">:</span> <span class="o">./</span><span class="n">lmod</span>
+<span class="n">module_settings</span><span class="p">:</span>
+  <span class="n">source</span><span class="p">:</span> <span class="n">docker</span>
+<span class="n">singularity</span><span class="p">:</span>
+  <span class="n">path</span><span class="p">:</span> <span class="o">./</span><span class="n">singularity</span>
+  <span class="n">sandbox</span><span class="p">:</span> <span class="n">false</span>
+<span class="n">whitelist</span><span class="p">:</span>
+  <span class="n">R</span><span class="p">:</span>
+    <span class="n">calls</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">R</span>
+    <span class="o">-</span> <span class="n">Rscript</span>
+    <span class="n">repo</span><span class="p">:</span> <span class="n">r</span><span class="o">-</span><span class="n">base</span>
+    <span class="n">source</span><span class="p">:</span> <span class="n">docker</span>
+    <span class="n">version</span><span class="p">:</span> <span class="s1">&#39;&gt;=3.6&#39;</span>
+  <span class="n">julia</span><span class="p">:</span>
+    <span class="n">source</span><span class="p">:</span> <span class="n">docker</span>
+    <span class="n">version</span><span class="p">:</span> <span class="s1">&#39;&gt;=1.0.1&#39;</span>
+  <span class="n">lolcow</span><span class="p">:</span>
+    <span class="n">repo</span><span class="p">:</span> <span class="n">leconte</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">lolcow</span>
+    <span class="n">source</span><span class="p">:</span> <span class="n">library</span>
+    <span class="n">version</span><span class="p">:</span> <span class="n">latest</span>
+  <span class="n">tensorflow</span><span class="p">:</span>
+    <span class="n">calls</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">python</span>
+    <span class="n">gpu</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">repo</span><span class="p">:</span> <span class="n">tensorflow</span><span class="o">/</span><span class="n">tensorflow</span>
+    <span class="n">shell</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">source</span><span class="p">:</span> <span class="n">docker</span>
+    <span class="n">version</span><span class="p">:</span> <span class="mf">1.12</span><span class="o">.</span><span class="mi">3</span><span class="o">-</span><span class="n">gpu</span><span class="o">-</span><span class="n">py3</span>
+</pre></div>
+</div>
+<p><strong>Versions</strong> The <code class="docutils literal notranslate"><span class="pre">version</span></code> strings above allow you to include all versions after a certain point, however you can also serve a single, explicit version. When you use the greater-than operator e.g. <code class="docutils literal notranslate"><span class="pre">&gt;=3.6</span></code>, Lmod will automatically load the latest version whenever you run e.g. <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">R</span></code>. To provide the latest versions, you can periodically run the <code class="docutils literal notranslate"><span class="pre">./cc</span> <span class="pre">refresh</span></code> command to update the module tree. This is preferable to the use of versions tagged “latest” from the source because it calls the docker API to check for an explicit version number.</p>
+<p><strong>Sources</strong> <a class="reference external" href="https://hub.docker.com/">DockerHub</a> is the default source for the Singularity images, however this default is set in the <code class="docutils literal notranslate"><span class="pre">module_settings</span></code> section and can be changed. Nevertheless all modules in the example above explicitly cite their source in the recipe, which can be used to override the default. The <code class="docutils literal notranslate"><span class="pre">R</span></code> package above specifies DockerHub by using <code class="docutils literal notranslate"><span class="pre">source:</span> <span class="pre">docker</span></code>. Similarly, the <code class="docutils literal notranslate"><span class="pre">repo</span></code> flag allows the administrator to define the organization which provides a particular container.</p>
+<p><strong>Shell functions</strong> By default, the name of the section in the <code class="docutils literal notranslate"><span class="pre">whitelist</span></code> is mapped to a shell function that calls <code class="docutils literal notranslate"><span class="pre">singularity</span> <span class="pre">run</span></code> on the container. However, you can also add the <code class="docutils literal notranslate"><span class="pre">calls</span></code> section to provide either a list of additional shell function names, or a set of key-value pairs for mapping exterior shell functions (keys) to programs inside the container (values). You can disable the default mapping with <code class="docutils literal notranslate"><span class="pre">shell:</span> <span class="pre">false</span></code> to disable the use of a <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code> shell function, since that program is invoked with <code class="docutils literal notranslate"><span class="pre">python</span></code> instead.</p>
+<p><strong>GPU Compatibility</strong> The <code class="docutils literal notranslate"><span class="pre">gpu</span></code> flag causes the program to use the <a class="reference external" href="https://docs.nvidia.com/ngc/ngc-user-guide/singularity.html">Nvidia bindings</a> available in Singularity.</p>
+<p><strong>Image locations</strong> Note that we automatically save the images to <code class="docutils literal notranslate"><span class="pre">~/.cc_yaml</span></code> for each user, however this can be configured with the <code class="docutils literal notranslate"><span class="pre">~/.cc_images</span></code> command.</p>
+</div>
+<div class="section" id="blacklist">
+<h2>Blacklist<a class="headerlink" href="#blacklist" title="Permalink to this headline">¶</a></h2>
+<p>Adding the following to your <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> will exclude certain pacakges from the moduletree.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">blacklist</span><span class="p">:</span>
+ <span class="o">-</span> <span class="n">julia</span>
+ <span class="o">-</span> <span class="n">qiime2</span>
+</pre></div>
+</div>
+<p>The names on this list will cause the <code class="docutils literal notranslate"><span class="pre">./cc</span> <span class="pre">refresh</span></code> loop to skip these modules (presumably named in the <code class="docutils literal notranslate"><span class="pre">whitelist</span></code>) when building the module tree.</p>
+</div>
+<div class="section" id="extensibility">
+<h2>Extensibility<a class="headerlink" href="#extensibility" title="Permalink to this headline">¶</a></h2>
+<p>The CC framework is designed to generate a large, dynamic set of modules based on the latest available versions of popular software packages provided by the container repositories. As a result, the successful deployment of CC depends almost entirely on the settings outlined in the <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> file. We propose that these files can be shared between institutions to provide a portable means of publishing the software that they provide in containers for the users. Sites which build and push custom images to the repositories can also add these images easily to the <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> file to allow their modules to reflect the diversity of packages that they have built for their users. In this way, the CC framework provides a simple way for HPC sites to coordinate and share a standardized list of preferred software, sources, versions, and even associated shell functions from among the many useful respository services.</p>
 </div>
 </div>
 
@@ -125,7 +472,7 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright .
+        &#169; Copyright 2019, Kevin Manalo, Ryan Bradley, Levi Baber.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
     </div>
   </body>
