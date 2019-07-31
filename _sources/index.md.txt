@@ -276,7 +276,7 @@ cd community-collections
 ./cc refresh
 ~~~
 
-Note that you may need to run `module load singularity` beforehand to ensure that CC can find that program. It will use a separate alias module to access the singularity executable with. The build procedure is very similar for the first two cases, however CC will rely on system-wide components (lua, tcl, etc) wherever possible. As with the previous cases, you can enable CC by preparing and sourcing a profile script with the following commands:
+Note that you may need to run `module load singularity` beforehand to ensure that CC can find that program. It will use a separate alias module to access the singularity executable. The build procedure is very similar for the first two cases, however CC will rely on system-wide components (lua, tcl, etc) wherever possible. As with the previous cases, you can enable CC by preparing and sourcing a profile script with the following commands.
 
 ~~~
 $ ./cc profile

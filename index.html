@@ -323,7 +323,7 @@ post_add_luarc /home/rpb/community-collections/cc_tools/lmodrc.lua
 <span class="o">./</span><span class="n">cc</span> <span class="n">refresh</span>
 </pre></div>
 </div>
-<p>Note that you may need to run <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">singularity</span></code> beforehand to ensure that CC can find that program. It will use a separate alias module to access the singularity executable which. The build procedure is very similar for the first two cases, however CC will rely on system-wide components (lua, tcl, etc) wherever possible. As with the previous cases, you can enable CC by preparing and sourcing a profile script with the following commands.</p>
+<p>Note that you may need to run <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">singularity</span></code> beforehand to ensure that CC can find that program. It will use a separate alias module to access the singularity executable. The build procedure is very similar for the first two cases, however CC will rely on system-wide components (lua, tcl, etc) wherever possible. As with the previous cases, you can enable CC by preparing and sourcing a profile script with the following commands.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./cc profile
 [CC] [STATUS] reading cache.json
 [CC] [STATUS] to use CC, run: source /home/rpb/community-collections/profile_cc.sh
