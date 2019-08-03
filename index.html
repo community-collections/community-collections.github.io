@@ -48,6 +48,7 @@
 <li><a class="reference internal" href="#a-name-usage-a-usage"><a name="usage"></a>
 Usage</a></li>
 <li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#whitelist">Whitelist</a></li>
 <li><a class="reference internal" href="#blacklist">Blacklist</a></li>
 <li><a class="reference internal" href="#extensibility">Extensibility</a></li>
 </ul>
@@ -87,10 +88,10 @@ framework which provides a seamless interface between
 containers</a> so that users can download and
 deploy software in a Singularity container using the elegant module Lmod
 system. The CC tool is useful for administrators who wish to install or detect
-both Lmod and Singularity, customize a list of containers from public sources
-(<a class="reference external" href="https://hub.docker.com/">Docker Hub</a>), <a class="reference external" href="https://singularity-hub.org/">Singularity
+both Lmod and Singularity, customize a list of containers from public sources such as
+<a class="reference external" href="https://hub.docker.com/">Docker Hub</a>, <a class="reference external" href="https://singularity-hub.org/">Singularity
 Hub</a>, and <a class="reference external" href="https://cloud.sylabs.io/library">Sylabs Cloud
-Library</a>).</p>
+Library</a>.</p>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
 <ol class="simple">
@@ -469,9 +470,38 @@ Use &quot;module keyword key1 key2 ...&quot; to search for all possible modules 
 <p><strong>GPU Compatibility</strong> The <code class="docutils literal notranslate"><span class="pre">gpu</span></code> flag causes the program to use the <a class="reference external" href="https://docs.nvidia.com/ngc/ngc-user-guide/singularity.html">Nvidia bindings</a> available in Singularity.</p>
 <p><strong>Image locations</strong> Note that we automatically save the images to <code class="docutils literal notranslate"><span class="pre">~/.cc_yaml</span></code> for each user, however this can be configured with the <code class="docutils literal notranslate"><span class="pre">~/.cc_images</span></code> command.</p>
 </div>
+<div class="section" id="whitelist">
+<h2>Whitelist<a class="headerlink" href="#whitelist" title="Permalink to this headline">¶</a></h2>
+<p>CC starts you off with a default whitelist, we repeat that for emphasis:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">whitelist</span><span class="p">:</span>
+  <span class="n">R</span><span class="p">:</span>
+    <span class="n">calls</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">R</span>
+    <span class="o">-</span> <span class="n">Rscript</span>
+    <span class="n">repo</span><span class="p">:</span> <span class="n">r</span><span class="o">-</span><span class="n">base</span>
+    <span class="n">source</span><span class="p">:</span> <span class="n">docker</span>
+    <span class="n">version</span><span class="p">:</span> <span class="s1">&#39;&gt;=3.6&#39;</span>
+  <span class="n">julia</span><span class="p">:</span>
+    <span class="n">source</span><span class="p">:</span> <span class="n">docker</span>
+    <span class="n">version</span><span class="p">:</span> <span class="s1">&#39;&gt;=1.0.1&#39;</span>
+  <span class="n">lolcow</span><span class="p">:</span>
+    <span class="n">repo</span><span class="p">:</span> <span class="n">leconte</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">lolcow</span>
+    <span class="n">source</span><span class="p">:</span> <span class="n">library</span>
+    <span class="n">version</span><span class="p">:</span> <span class="n">latest</span>
+  <span class="n">tensorflow</span><span class="p">:</span>
+    <span class="n">calls</span><span class="p">:</span>
+    <span class="o">-</span> <span class="n">python</span>
+    <span class="n">gpu</span><span class="p">:</span> <span class="n">true</span>
+    <span class="n">repo</span><span class="p">:</span> <span class="n">tensorflow</span><span class="o">/</span><span class="n">tensorflow</span>
+    <span class="n">shell</span><span class="p">:</span> <span class="n">false</span>
+    <span class="n">source</span><span class="p">:</span> <span class="n">docker</span>
+    <span class="n">version</span><span class="p">:</span> <span class="mf">1.12</span><span class="o">.</span><span class="mi">3</span><span class="o">-</span><span class="n">gpu</span><span class="o">-</span><span class="n">py3</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="blacklist">
 <h2>Blacklist<a class="headerlink" href="#blacklist" title="Permalink to this headline">¶</a></h2>
-<p>Adding the following to your <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> will exclude certain pacakges from the moduletree.</p>
+<p>Adding the following to your <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> will exclude certain pacakges from the moduletree:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">blacklist</span><span class="p">:</span>
  <span class="o">-</span> <span class="n">julia</span>
  <span class="o">-</span> <span class="n">qiime2</span>
