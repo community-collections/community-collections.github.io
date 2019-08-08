@@ -86,12 +86,13 @@ Usage</a></li>
 framework which provides a seamless interface between
 <a class="reference external" href="https://lmod.readthedocs.io/en/latest/">Lmod</a> and <a class="reference external" href="https://sylabs.io/singularity/">Singularity
 containers</a> so that users can download and
-deploy software in a Singularity container using the elegant module Lmod
+deploy software in a Singularity container using the elegant Lmod module
 system. The CC tool is useful for administrators who wish to install or detect
-both Lmod and Singularity, customize a list of containers from public sources such as
-<a class="reference external" href="https://hub.docker.com/">Docker Hub</a>, <a class="reference external" href="https://singularity-hub.org/">Singularity
-Hub</a>, and <a class="reference external" href="https://cloud.sylabs.io/library">Sylabs Cloud
-Library</a>.</p>
+both Lmod and Singularity, customize a list of containers from public sources
+such as <a class="reference external" href="https://hub.docker.com/">Docker Hub</a>, <a class="reference external" href="https://singularity-hub.org/">Singularity
+Hub</a>, <a class="reference external" href="https://cloud.sylabs.io/library">Sylabs Cloud
+Library</a>, and <a class="reference external" href="https://ngc.nvidia.com/registry/">NGC
+Registry</a>,.</p>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
 <ol class="simple">
@@ -142,10 +143,16 @@ install Singularity and Lmod.</p>
 <h2>What happens when you run “refresh”?<a class="headerlink" href="#what-happens-when-you-run-refresh" title="Permalink to this headline">¶</a></h2>
 <p>Each time you run the <code class="docutils literal notranslate"><span class="pre">./cc</span> <span class="pre">refresh</span></code> command, it executes the following loop.</p>
 <ol class="simple">
-<li><p>Install the python environment to <code class="docutils literal notranslate"><span class="pre">./miniconda</span></code> and point the <code class="docutils literal notranslate"><span class="pre">./cc</span></code> executable to use that environment. This provides a consistent python environment.</p></li>
+<li><p>Install the python environment to <code class="docutils literal notranslate"><span class="pre">./miniconda</span></code> and point the <code class="docutils literal notranslate"><span class="pre">./cc</span></code>
+executable to use that environment. This provides a consistent python
+environment.</p></li>
 <li><p>Read the <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> file or write the default one.</p></li>
-<li><p>Check for Singularity and Lmod and if they are not registered in <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code>. If they are not detected automatically, the code will ask you to edit the file. You can either provide the path to the existing installations, or more likely, ask the program to build them on the next “refresh”.</p></li>
-<li><p>If both Lmod and Singularity are ready, the refresh command will automatically generate the module tree from the “whitelist” in <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code>.</p></li>
+<li><p>Check for Singularity and Lmod and if they are not registered in <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code>.
+If they are not detected automatically, the code will ask you to edit the file.
+You can either provide the path to the existing installations, or more likely,
+ask the program to build them on the next “refresh”.</p></li>
+<li><p>If both Lmod and Singularity are ready, the refresh command will
+automatically generate the module tree from the “whitelist” in <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code>.</p></li>
 <li><p>The user can customize the whitelist and then run <code class="docutils literal notranslate"><span class="pre">./cc</span> <span class="pre">refresh</span></code> again to update the module tree.</p></li>
 </ol>
 </div>
@@ -187,7 +194,9 @@ status executing the following script
 [STATUS] temporary build directory is /tmp/tmp.sQGCSCsUJJ
 </pre></div>
 </div>
-<p>The output continues as the program installs a Miniconda environment and a set of supporting software. When it is done, you will see the following “error” message.</p>
+<p>The output continues as the program installs a Miniconda environment and a set
+of supporting software. When it is done, you will see the following “error”
+message.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">done</span> <span class="n">building</span> <span class="n">the</span> <span class="n">environment</span>
 <span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">writing</span> <span class="n">cache</span><span class="o">.</span><span class="n">json</span>
 <span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">running</span> <span class="n">a</span> <span class="n">subshell</span> <span class="n">to</span> <span class="n">complete</span> <span class="n">the</span> <span class="n">installation</span>
@@ -202,7 +211,8 @@ status executing the following script
 <span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="p">[</span><span class="n">STATUS</span><span class="p">]</span> <span class="n">writing</span> <span class="n">cache</span><span class="o">.</span><span class="n">json</span>
 </pre></div>
 </div>
-<p>At this point, CC has failed to find Singularity or Lmod. Edit the default <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> file to authorize a build. This is our <em><strong>settings</strong></em> file.</p>
+<p>At this point, CC has failed to find Singularity or Lmod. Edit the default
+<code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> file to authorize a build. This is our <em><strong>settings</strong></em> file.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># cc.yaml
 images: ~/.cc_images
 lmod:
@@ -342,18 +352,35 @@ post_add_luarc /home/rpb/community-collections/cc_tools/lmodrc.lua
 </div>
 <div class="section" id="case-2-a-minimal-system-without-root">
 <h2>Case 2: A minimal system without root<a class="headerlink" href="#case-2-a-minimal-system-without-root" title="Permalink to this headline">¶</a></h2>
-<p>If you do not have root access on your machine, you can use Singularity if you have a kernel that provides uesr namespaces. You can install the code using the exact same procedure above, with only one difference. Your <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> file will have a <code class="docutils literal notranslate"><span class="pre">sandbox</span></code> flag in the <code class="docutils literal notranslate"><span class="pre">singularity</span></code> entry. Set it if you lack root, and the code will use the <code class="docutils literal notranslate"><span class="pre">userns</span></code> and <code class="docutils literal notranslate"><span class="pre">sandbox</span></code> flags when building Singularity containers. These are described in the <a class="reference external" href="https://sylabs.io/guides/3.3/user-guide/build_a_container.html">Singularity documentation</a>.</p>
-<p>If your kernel does not provide usernamespaces, the code will refuse to build. A sandbox is really just a standard directory structure. The downside to using sandboxes is the large overhead caused by using many small files. This solution is nevertheless highly useful for users without root.</p>
+<p>If you do not have root access on your machine, you can use Singularity if you
+have a kernel that provides uesr namespaces. You can install the code using the
+exact same procedure above, with only one difference. Your <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> file will
+have a <code class="docutils literal notranslate"><span class="pre">sandbox</span></code> flag in the <code class="docutils literal notranslate"><span class="pre">singularity</span></code> entry. Set it if you lack root, and
+the code will use the <code class="docutils literal notranslate"><span class="pre">userns</span></code> and <code class="docutils literal notranslate"><span class="pre">sandbox</span></code> flags when building Singularity
+containers. These are described in the <a class="reference external" href="https://sylabs.io/guides/3.3/user-guide/build_a_container.html">Singularity
+documentation</a>.</p>
+<p>If your kernel does not provide usernamespaces, the code will refuse to build.
+A sandbox is really just a standard directory structure. The downside to using
+sandboxes is the large overhead caused by using many small files. This solution
+is nevertheless highly useful for users without root.</p>
 </div>
 <div class="section" id="case-3-an-hpc-resource-with-singularity-and-lmod">
 <h2>Case 3: An HPC resource with Singularity and Lmod<a class="headerlink" href="#case-3-an-hpc-resource-with-singularity-and-lmod" title="Permalink to this headline">¶</a></h2>
-<p>If you wish to use CC on a well-maintained HPC resource that already provides Singularity and Lmod, you can install it with the same procedure above. The code will detect these components and use the available versions instead of building its own.</p>
+<p>If you wish to use CC on a well-maintained HPC resource that already provides
+Singularity and Lmod, you can install it with the same procedure above. The
+code will detect these components and use the available versions instead of
+building its own.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">community</span><span class="o">-</span><span class="n">collections</span><span class="o">/</span><span class="n">community</span><span class="o">-</span><span class="n">collections</span>
 <span class="n">cd</span> <span class="n">community</span><span class="o">-</span><span class="n">collections</span>
 <span class="o">./</span><span class="n">cc</span> <span class="n">refresh</span>
 </pre></div>
 </div>
-<p>Note that you may need to run <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">singularity</span></code> beforehand to ensure that CC can find that program. It will use a separate alias module to access the singularity executable. The build procedure is very similar for the first two cases, however CC will rely on system-wide components (lua, tcl, etc) wherever possible. As with the previous cases, you can enable CC by preparing and sourcing a profile script with the following commands.</p>
+<p>Note that you may need to run <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">singularity</span></code> beforehand to ensure
+that CC can find that program. It will use a separate alias module to access
+the singularity executable. The build procedure is very similar for the first
+two cases, however CC will rely on system-wide components (lua, tcl, etc)
+wherever possible. As with the previous cases, you can enable CC by preparing
+and sourcing a profile script with the following commands.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ./cc profile
 [CC] [STATUS] reading cache.json
 [CC] [STATUS] to use CC, run: source /home/rpb/community-collections/profile_cc.sh
@@ -363,7 +390,9 @@ source /home/rpb/community-collections/profile_cc.sh
 [CC] [STATUS] cache is unchanged
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">profile_cc.sh</span></code> script (<a class="reference external" href="#profile">see above</a>) adds a new moduletree to Lmod and sets the correct environment variables to use singularity. You can start using singularity by sourcing this script.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">profile_cc.sh</span></code> script (<a class="reference external" href="#profile">see above</a>) adds a new moduletree to
+Lmod and sets the correct environment variables to use singularity. You can
+start using singularity by sourcing this script.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">community</span><span class="o">-</span><span class="n">collections</span><span class="o">/</span><span class="n">profile_cc</span><span class="o">.</span><span class="n">sh</span>
 </pre></div>
 </div>
@@ -371,7 +400,9 @@ source /home/rpb/community-collections/profile_cc.sh
 <div class="section" id="a-name-usage-a-usage">
 <h2><a name="usage"></a>
 Usage<a class="headerlink" href="#a-name-usage-a-usage" title="Permalink to this headline">¶</a></h2>
-<p>Once CC is installed, it behaves almost exactly like a standard software module. The moduletree provided by CC will coeexist with your preexisting modules.</p>
+<p>Once CC is installed, it behaves almost exactly like a standard software
+module. The moduletree provided by CC will coeexist with your preexisting
+modules.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ module avail
 ------------------- /home/rpb/community-collections/modulefiles -------------------
    R/3.6.0              (a)      julia/1.0.1 (a)    julia/1.1.0               (a)
@@ -390,8 +421,16 @@ Use &quot;module spider&quot; to find all possible modules.
 Use &quot;module keyword key1 key2 ...&quot; to search for all possible modules matching any of the &quot;keys&quot;.
 </pre></div>
 </div>
-<p>The modules prefixed with <code class="docutils literal notranslate"><span class="pre">cc</span></code> provide the Miniconda environment (<code class="docutils literal notranslate"><span class="pre">cc/env</span></code>) and conda itself (<code class="docutils literal notranslate"><span class="pre">cc/conda</span></code>) for internal use by CC. The <code class="docutils literal notranslate"><span class="pre">cc/singularity</span></code> module will point to either a detected Singularity already installed on the machine (which might be available from a separate module) or the internal copy built by CC. You do not have to use these modules directly.</p>
-<p>The remaining modules are provided by the versions in the <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> settings file. The property tag “(a)” indicates that they are ready to be downloaded, while <code class="docutils literal notranslate"><span class="pre">(r)</span></code> indicates that they have already been downloaded. When you load an “available” module for the first time, CC will call a <code class="docutils literal notranslate"><span class="pre">singularity</span> <span class="pre">pull</span></code> to download the image to <code class="docutils literal notranslate"><span class="pre">~/.cc_images</span></code>.</p>
+<p>The modules prefixed with <code class="docutils literal notranslate"><span class="pre">cc</span></code> provide the Miniconda environment (<code class="docutils literal notranslate"><span class="pre">cc/env</span></code>) and
+conda itself (<code class="docutils literal notranslate"><span class="pre">cc/conda</span></code>) for internal use by CC. The <code class="docutils literal notranslate"><span class="pre">cc/singularity</span></code> module
+will point to either a detected Singularity already installed on the machine
+(which might be available from a separate module) or the internal copy built by
+CC. You do not have to use these modules directly.</p>
+<p>The remaining modules are provided by the versions in the <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> settings
+file. The property tag “(a)” indicates that they are ready to be downloaded,
+while <code class="docutils literal notranslate"><span class="pre">(r)</span></code> indicates that they have already been downloaded. When you load an
+“available” module for the first time, CC will call a <code class="docutils literal notranslate"><span class="pre">singularity</span> <span class="pre">pull</span></code> to
+download the image to <code class="docutils literal notranslate"><span class="pre">~/.cc_images</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ml</span> <span class="n">R</span>
 <span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="n">making</span> <span class="n">a</span> <span class="n">cache</span> <span class="n">directory</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">rpb</span><span class="o">/.</span><span class="n">cc_images</span>
 <span class="n">INFO</span><span class="p">:</span>    <span class="n">Converting</span> <span class="n">OCI</span> <span class="n">blobs</span> <span class="n">to</span> <span class="n">SIF</span> <span class="nb">format</span>
@@ -425,11 +464,20 @@ Use &quot;module keyword key1 key2 ...&quot; to search for all possible modules 
 <span class="p">[</span><span class="n">CC</span><span class="p">]</span> <span class="n">the</span> <span class="n">module</span> <span class="ow">is</span> <span class="n">ready</span><span class="p">:</span> <span class="n">R</span>
 </pre></div>
 </div>
-<p>The code reports the size of the image because it is downloaded to the <code class="docutils literal notranslate"><span class="pre">~/.cc_image</span></code> folder and may count against a quota. After loading the module once, the code is marked “ready” on the module list and the next time you load the module, it will used the cached image. Most programs, like <code class="docutils literal notranslate"><span class="pre">R</span></code> are aliased directly to a shell function that calls singularity to start the container with the <code class="docutils literal notranslate"><span class="pre">R</span></code> command. It also pipes arguments into that command. Aside from the output above, the use of a singularity container is completely opaque to the user.</p>
+<p>The code reports the size of the image because it is downloaded to the
+<code class="docutils literal notranslate"><span class="pre">~/.cc_image</span></code> folder and may count against a quota. After loading the module
+once, the code is marked “ready” on the module list and the next time you load
+the module, it will used the cached image. Most programs, like <code class="docutils literal notranslate"><span class="pre">R</span></code> are aliased
+directly to a shell function that calls singularity to start the container with
+the <code class="docutils literal notranslate"><span class="pre">R</span></code> command. It also pipes arguments into that command. Aside from the
+output above, the use of a singularity container is completely opaque to the
+user.</p>
 </div>
 <div class="section" id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h2>
-<p>CC is designed to provide “versionless” modules from the fairly simple <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> settings file. Let us consider the <code class="docutils literal notranslate"><span class="pre">R</span></code> package described above. The following is the default <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> after we have installed the pacakge.</p>
+<p>CC is designed to provide “versionless” modules from the fairly simple
+<code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> settings file. Let us consider the <code class="docutils literal notranslate"><span class="pre">R</span></code> package described above. The
+following is the default <code class="docutils literal notranslate"><span class="pre">cc.yaml</span></code> after we have installed the pacakge.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cc.yaml</span>
 <span class="n">images</span><span class="p">:</span> <span class="o">~/.</span><span class="n">cc_images</span>
 <span class="n">lmod</span><span class="p">:</span>
@@ -464,11 +512,34 @@ Use &quot;module keyword key1 key2 ...&quot; to search for all possible modules 
     <span class="n">version</span><span class="p">:</span> <span class="mf">1.12</span><span class="o">.</span><span class="mi">3</span><span class="o">-</span><span class="n">gpu</span><span class="o">-</span><span class="n">py3</span>
 </pre></div>
 </div>
-<p><strong>Versions</strong> The <code class="docutils literal notranslate"><span class="pre">version</span></code> strings above allow you to include all versions after a certain point, however you can also serve a single, explicit version. When you use the greater-than operator e.g. <code class="docutils literal notranslate"><span class="pre">&gt;=3.6</span></code>, Lmod will automatically load the latest version whenever you run e.g. <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">R</span></code>. To provide the latest versions, you can periodically run the <code class="docutils literal notranslate"><span class="pre">./cc</span> <span class="pre">refresh</span></code> command to update the module tree. This is preferable to the use of versions tagged “latest” from the source because it calls the docker API to check for an explicit version number.</p>
-<p><strong>Sources</strong> <a class="reference external" href="https://hub.docker.com/">DockerHub</a> is the default source for the Singularity images, however this default is set in the <code class="docutils literal notranslate"><span class="pre">module_settings</span></code> section and can be changed. Nevertheless all modules in the example above explicitly cite their source in the recipe, which can be used to override the default. The <code class="docutils literal notranslate"><span class="pre">R</span></code> package above specifies DockerHub by using <code class="docutils literal notranslate"><span class="pre">source:</span> <span class="pre">docker</span></code>. Similarly, the <code class="docutils literal notranslate"><span class="pre">repo</span></code> flag allows the administrator to define the organization which provides a particular container.</p>
-<p><strong>Shell functions</strong> By default, the name of the section in the <code class="docutils literal notranslate"><span class="pre">whitelist</span></code> is mapped to a shell function that calls <code class="docutils literal notranslate"><span class="pre">singularity</span> <span class="pre">run</span></code> on the container. However, you can also add the <code class="docutils literal notranslate"><span class="pre">calls</span></code> section to provide either a list of additional shell function names, or a set of key-value pairs for mapping exterior shell functions (keys) to programs inside the container (values). You can disable the default mapping with <code class="docutils literal notranslate"><span class="pre">shell:</span> <span class="pre">false</span></code> to disable the use of a <code class="docutils literal notranslate"><span class="pre">tensorflow</span></code> shell function, since that program is invoked with <code class="docutils literal notranslate"><span class="pre">python</span></code> instead.</p>
-<p><strong>GPU Compatibility</strong> The <code class="docutils literal notranslate"><span class="pre">gpu</span></code> flag causes the program to use the <a class="reference external" href="https://docs.nvidia.com/ngc/ngc-user-guide/singularity.html">Nvidia bindings</a> available in Singularity.</p>
-<p><strong>Image locations</strong> Note that we automatically save the images to <code class="docutils literal notranslate"><span class="pre">~/.cc_yaml</span></code> for each user, however this can be configured with the <code class="docutils literal notranslate"><span class="pre">~/.cc_images</span></code> command.</p>
+<p><strong>Versions</strong> The <code class="docutils literal notranslate"><span class="pre">version</span></code> strings above allow you to include all versions
+after a certain point, however you can also serve a single, explicit version.
+When you use the greater-than operator e.g. <code class="docutils literal notranslate"><span class="pre">&gt;=3.6</span></code>, Lmod will automatically
+load the latest version whenever you run e.g. <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">R</span></code>. To provide the
+latest versions, you can periodically run the <code class="docutils literal notranslate"><span class="pre">./cc</span> <span class="pre">refresh</span></code> command to update
+the module tree. This is preferable to the use of versions tagged “latest” from
+the source because it calls the docker API to check for an explicit version
+number.</p>
+<p><strong>Sources</strong> <a class="reference external" href="https://hub.docker.com/">DockerHub</a> is the default source for the
+Singularity images, however this default is set in the <code class="docutils literal notranslate"><span class="pre">module_settings</span></code>
+section and can be changed. Nevertheless all modules in the example above
+explicitly cite their source in the recipe, which can be used to override the
+default. The <code class="docutils literal notranslate"><span class="pre">R</span></code> package above specifies DockerHub by using <code class="docutils literal notranslate"><span class="pre">source:</span> <span class="pre">docker</span></code>.
+Similarly, the <code class="docutils literal notranslate"><span class="pre">repo</span></code> flag allows the administrator to define the organization
+which provides a particular container.</p>
+<p><strong>Shell functions</strong> By default, the name of the section in the <code class="docutils literal notranslate"><span class="pre">whitelist</span></code> is
+mapped to a shell function that calls <code class="docutils literal notranslate"><span class="pre">singularity</span> <span class="pre">run</span></code> on the container.
+However, you can also add the <code class="docutils literal notranslate"><span class="pre">calls</span></code> section to provide either a list of
+additional shell function names, or a set of key-value pairs for mapping
+exterior shell functions (keys) to programs inside the container (values). You
+can disable the default mapping with <code class="docutils literal notranslate"><span class="pre">shell:</span> <span class="pre">false</span></code> to disable the use of a
+<code class="docutils literal notranslate"><span class="pre">tensorflow</span></code> shell function, since that program is invoked with <code class="docutils literal notranslate"><span class="pre">python</span></code>
+instead.</p>
+<p><strong>GPU Compatibility</strong> The <code class="docutils literal notranslate"><span class="pre">gpu</span></code> flag causes the program to use the <a class="reference external" href="https://docs.nvidia.com/ngc/ngc-user-guide/singularity.html">Nvidia
+bindings</a>
+available in Singularity.</p>
+<p><strong>Image locations</strong> Note that we automatically save the images to <code class="docutils literal notranslate"><span class="pre">~/.cc_yaml</span></code>
+for each user, however this can be configured with the <code class="docutils literal notranslate"><span class="pre">~/.cc_images</span></code> command.</p>
 </div>
 <div class="section" id="whitelist">
 <h2>Whitelist<a class="headerlink" href="#whitelist" title="Permalink to this headline">¶</a></h2>
